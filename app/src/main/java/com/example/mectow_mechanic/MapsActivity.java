@@ -33,11 +33,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-    GoogleMap mMap,mMap2;
+    GoogleMap mMap, mMap2;
     SupportMapFragment supportMapFragment;
     FusedLocationProviderClient fusedLocationProviderClient;
-    Double lat,lng;
-
+    Double lat, lng;
 
 
     @Override
@@ -47,7 +46,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MapsActivity.this);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         supportMapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -89,36 +87,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onComplete(@NonNull Task<Location> task) {
                     Location location = task.getResult();
                     if (location != null) {
-                        lat=location.getLatitude();
-                        lng=location.getLongitude();
-                        String.valueOf(location.getLatitude());
-                        String.valueOf(location.getLongitude());
+                        lat = location.getLatitude();
+                        lng = location.getLongitude();
                         supportMapFragment.getMapAsync(new OnMapReadyCallback() {
                             @Override
                             public void onMapReady(@NonNull GoogleMap googleMap) {
-                                LatLng latLng=new LatLng(lat,lng);
-                                MarkerOptions options=new MarkerOptions().position(latLng);
-                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+                                LatLng latLng = new LatLng(lat, lng);
+                                MarkerOptions options = new MarkerOptions().position(latLng);
+                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                                 googleMap.addMarker(options);
-
                             }
                         });
-                    } else {
-                        LocationRequest locationRequest = new LocationRequest()
-                                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                                .setInterval(10000)
-                                .setFastestInterval(10000)
-                                .setNumUpdates(1);
-                        LocationCallback locationCallback = new LocationCallback() {
-                            @Override
-                            public void onLocationResult(@NonNull LocationResult locationResult) {
-                                Location location1 = locationResult.getLastLocation();
-                                String.valueOf(location1.getLatitude());
-                                String.valueOf(location1.getLongitude());
-                            }
-                        };
-                        fusedLocationProviderClient.requestLocationUpdates(locationRequest
-                                , locationCallback, Looper.myLooper());
                     }
                 }
             });

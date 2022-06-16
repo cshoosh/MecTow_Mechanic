@@ -65,8 +65,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.CancellationToken;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnTokenCanceledListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -106,7 +108,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     public static String customer_uid;
     String mechtype;
     public static String customerrequestuid;
-    DatabaseReference mechanicref;
     String call = "";
     ConstraintLayout approvalRequestLayout, _approvalRequestLayout;
     Button cancel_approvaRequestLayout, accept_approvaRequestLayout;
@@ -123,10 +124,42 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
     FusedLocationProviderClient fusedLocationProviderClient;
     Double lat, lng;
     Marker mGlobalMarker;
+    LocationCallback mLocationCallback;
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mLocationCallback != null)
+            fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+        mLocationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+
+                Log.d("Location", locationResult.toString());
+
+                HashMap<String, Object> userlocation = new HashMap<>();
+                Location location = locationResult.getLocations().get(locationResult.getLocations().size() - 1);
+                userlocation.put("latitude", String.valueOf(location.getLatitude()));
+                userlocation.put("longitude", String.valueOf(location.getLongitude()));
+
+                reference
+                        .child(Objects.requireNonNull(auth.getUid()))
+                        .updateChildren(userlocation);
+
+                if (mGlobalMarker != null && mMap2 != null) {
+                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                    mMap2.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                    mGlobalMarker.setPosition(latLng);
+                }
+
+            }
+        };
         mapFragment = (SupportMapFragment) this.getChildFragmentManager()
                 .findFragmentById(R.id.map1);
         auth = FirebaseAuth.getInstance();
@@ -161,142 +194,95 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
         calldial = view.findViewById(R.id._call);
         message = view.findViewById(R.id._message);
-        calldial.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:" + call));
+        calldial.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + call));
+            startActivity(intent);
+        });
+        message.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), MessagingActivity.class);
+            intent.putExtra("cid", customer_uid);
+            startActivity(intent);
+        });
+        startworklayout1.setOnClickListener(v -> {
+            DatabaseReference reff = (DatabaseReference) FirebaseDatabase.getInstance().getReference("Complaint").child(customerrequestuid);
+            HashMap<String, Object> updateData = new HashMap<>();
+            updateData.put("state", "startworking");
+            reff.updateChildren(updateData).addOnSuccessListener(aVoid -> {
+                startworklayout1.setVisibility(GONE);
+                endworklayout1.setVisibility(View.VISIBLE);
+            });
+        });
+        endworklayout1.setOnClickListener(v -> {
+            DatabaseReference reff = (DatabaseReference) FirebaseDatabase.getInstance().getReference("Complaint").child(customerrequestuid);
+            HashMap<String, Object> updateData = new HashMap<>();
+            updateData.put("state", "end");
+
+            reff.updateChildren(updateData).addOnSuccessListener(aVoid -> {
+                endworklayout1.setVisibility(GONE);
+                Intent intent = new Intent(getContext(), Activity_rate.class);
                 startActivity(intent);
-            }
+            });
         });
-        message.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), MessagingActivity.class);
-                intent.putExtra("cid", customer_uid);
-                startActivity(intent);
-            }
-        });
-        startworklayout1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatabaseReference reff = (DatabaseReference) FirebaseDatabase.getInstance().getReference("Complaint").child(customerrequestuid);
-                HashMap<String, Object> updateData = new HashMap<>();
-                updateData.put("state", "startworking");
-                reff.updateChildren(updateData).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        startworklayout1.setVisibility(GONE);
-                        endworklayout1.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
-        });
-        endworklayout1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatabaseReference reff = (DatabaseReference) FirebaseDatabase.getInstance().getReference("Complaint").child(customerrequestuid);
-                HashMap<String, Object> updateData = new HashMap<>();
-                updateData.put("state", "end");
+        Arrivedworklayout1.setOnClickListener(v -> {
+            DatabaseReference reff = (DatabaseReference) FirebaseDatabase.getInstance().getReference("Complaint").child(customerrequestuid);
+            HashMap<String, Object> updateData = new HashMap<>();
+            updateData.put("state", "arrived");
 
-                reff.updateChildren(updateData).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        endworklayout1.setVisibility(GONE);
-                        Intent intent = new Intent(getContext(), Activity_rate.class);
-                        startActivity(intent);
-                    }
-                });
-            }
+            reff.updateChildren(updateData).addOnSuccessListener(aVoid -> {
+                Arrivedworklayout1.setVisibility(GONE);
+                startworklayout1.setVisibility(View.VISIBLE);
+            });
         });
-        Arrivedworklayout1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatabaseReference reff = (DatabaseReference) FirebaseDatabase.getInstance().getReference("Complaint").child(customerrequestuid);
-                HashMap<String, Object> updateData = new HashMap<>();
-                updateData.put("state", "arrived");
+        Arrivingworklayout1.setOnClickListener(v -> {
+            DatabaseReference reff = (DatabaseReference) FirebaseDatabase.getInstance().getReference("Complaint").child(customerrequestuid);
+            HashMap<String, Object> updateData = new HashMap<>();
+            updateData.put("state", "moving");
+            reff.updateChildren(updateData).addOnSuccessListener(aVoid -> {
+                Arrivingworklayout1.setVisibility(GONE);
+                Arrivedworklayout1.setVisibility(View.VISIBLE);
+            });
 
-                reff.updateChildren(updateData).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Arrivedworklayout1.setVisibility(GONE);
-                        startworklayout1.setVisibility(View.VISIBLE);
-                    }
-                });
-            }
-        });
-        Arrivingworklayout1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatabaseReference reff = (DatabaseReference) FirebaseDatabase.getInstance().getReference("Complaint").child(customerrequestuid);
-                HashMap<String, Object> updateData = new HashMap<>();
-                updateData.put("state", "moving");
-                reff.updateChildren(updateData).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Arrivingworklayout1.setVisibility(GONE);
-                        Arrivedworklayout1.setVisibility(View.VISIBLE);
-                    }
-                });
-
-            }
         });
         polylines = new ArrayList<>();
-        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (status) {
-                    if (isChecked) {
+        toggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (status) {
+                if (isChecked) {
 
-                        HashMap<String, Object> userstate = new HashMap<>();
-                        userstate.put("status", "online");
-                        FirebaseDatabase.getInstance().getReference("WorkerState").child(Objects.requireNonNull(auth.getUid()))
-                                .updateChildren(userstate).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            final Handler handler = new Handler();
-                                            handler.postDelayed(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    fetchMechanicState();
-                                                }
-                                            }, 3000);
-                                            //fetchComplainttow(login_mechanic.services);
-                                        }
-                                    }
-                                });
+                    HashMap<String, Object> userstate = new HashMap<>();
+                    userstate.put("status", "online");
+                    FirebaseDatabase.getInstance().getReference("WorkerState").child(Objects.requireNonNull(auth.getUid()))
+                            .updateChildren(userstate).addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    final Handler handler = new Handler();
+                                    handler.postDelayed(this::fetchMechanicState, 3000);
+                                    //fetchComplainttow(login_mechanic.services);
+                                }
+                            });
 
-                    } else {
-                        HashMap<String, Object> userstate = new HashMap<>();
-                        userstate.put("status", "offline");
-                        FirebaseDatabase.getInstance().getReference("WorkerState").child(Objects.requireNonNull(auth.getUid()))
-                                .updateChildren(userstate).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(getContext(), "Worker is Offline", Toast.LENGTH_SHORT).show();
-
-                                        }
-
-                                    }
-                                });
-                    }
                 } else {
-                    isChecked = false;
-                    toggle.setChecked(false);
-                    Toast.makeText(getContext(), "fetch location first", Toast.LENGTH_SHORT).show();
+                    HashMap<String, Object> userstate = new HashMap<>();
+                    userstate.put("status", "offline");
+                    FirebaseDatabase.getInstance().getReference("WorkerState").child(Objects.requireNonNull(auth.getUid()))
+                            .updateChildren(userstate).addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(getContext(), "Worker is Offline", Toast.LENGTH_SHORT).show();
+
+                                }
+
+                            });
                 }
+            } else {
+                isChecked = false;
+                toggle.setChecked(false);
+                Toast.makeText(getContext(), "fetch location first", Toast.LENGTH_SHORT).show();
             }
         });
         locationbtn = (ImageView) view.findViewById(R.id.locationbtn);
-        locationbtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                status = true;
-                fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getContext()));
-                getcurrentlocation();
-            }
+        locationbtn.setOnClickListener(v -> {
+            status = true;
+            fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(Objects.requireNonNull(getContext()));
+            getcurrentlocation();
         });
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -346,11 +332,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             if (!dataSnapshot.child("state").exists()) {
-                                String type = Objects.requireNonNull(dataSnapshot.child("type").getValue()).toString();
-                                mechtype = type;
+                                mechtype = Objects.requireNonNull(dataSnapshot.child("type").getValue()).toString();
                                 if (login_mechanic.services.equals("mechanic")) {
-                                    Double lat = Double.valueOf(Objects.requireNonNull(dataSnapshot.child("lat").getValue()).toString());
-                                    Double lng = Double.valueOf(Objects.requireNonNull(dataSnapshot.child("lng").getValue()).toString());
+                                    double lat = Double.parseDouble(Objects.requireNonNull(dataSnapshot.child("lat").getValue()).toString());
+                                    double lng = Double.parseDouble(Objects.requireNonNull(dataSnapshot.child("lng").getValue()).toString());
                                     LatLng latLng = new LatLng(lat, lng);
                                     key = dataSnapshot.getKey();
                                     LatLng current = new LatLng(CurrentLocation.getLatitude(), CurrentLocation.getLongitude());
@@ -385,46 +370,36 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                                     MarkerOptions options = new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)).position(latLng);
                                     mMap2.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                                     mMap2.addMarker(options);
-                                    mMap2.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                                        @Override
-                                        public boolean onMarkerClick(@NonNull Marker marker) {
-                                            approvalRequestLayout.setVisibility(View.VISIBLE);
-                                            accept_approvaRequestLayout.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    customerrequestuid = dataSnapshot.getKey();
-                                                    fetchMechanicState();
-                                                    AcceptRequest(key);
-                                                    getRouteToMarker(latLng);
-                                                    _approvalRequestLayout.setVisibility(View.VISIBLE);
+                                    mMap2.setOnMarkerClickListener(marker -> {
+                                        approvalRequestLayout.setVisibility(View.VISIBLE);
+                                        accept_approvaRequestLayout.setOnClickListener(v -> {
+                                            customerrequestuid = dataSnapshot.getKey();
+                                            fetchMechanicState();
+                                            AcceptRequest(key);
+                                            getRouteToMarker(latLng);
+                                            _approvalRequestLayout.setVisibility(View.VISIBLE);
+                                            approvalRequestLayout.setVisibility(GONE);
+                                            Arrivingworklayout1.setVisibility(View.VISIBLE);
+                                        });
+
+                                        cancel_approvaRequestLayout.setOnClickListener(v -> {
+                                            if (_state != null) {
+                                                if (_state.equals("free")) {
+                                                    fetchComplaint(mechtype);
                                                     approvalRequestLayout.setVisibility(GONE);
-                                                    Arrivingworklayout1.setVisibility(View.VISIBLE);
+
                                                 }
-                                            });
-
-                                            cancel_approvaRequestLayout.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-
-                                                public void onClick(View v) {
-                                                    if (_state != null) {
-                                                        if (_state.equals("free")) {
-                                                            fetchComplaint(mechtype);
-                                                            approvalRequestLayout.setVisibility(GONE);
-
-                                                        }
-                                                    } else {
-                                                        fetchComplaint(mechtype);
-                                                        approvalRequestLayout.setVisibility(GONE);
-                                                    }
-                                                }
-                                            });
-                                            return false;
-                                        }
+                                            } else {
+                                                fetchComplaint(mechtype);
+                                                approvalRequestLayout.setVisibility(GONE);
+                                            }
+                                        });
+                                        return false;
                                     });
                                     //}
                                 } else if (login_mechanic.services.equals("cartow")) {
-                                    Double lat = Double.valueOf(Objects.requireNonNull(dataSnapshot.child("lat").getValue()).toString());
-                                    Double lng = Double.valueOf(Objects.requireNonNull(dataSnapshot.child("lng").getValue()).toString());
+                                    double lat = Double.parseDouble(Objects.requireNonNull(dataSnapshot.child("lat").getValue()).toString());
+                                    double lng = Double.parseDouble(Objects.requireNonNull(dataSnapshot.child("lng").getValue()).toString());
                                     LatLng latLng = new LatLng(lat, lng);
 
                                     LatLng current = new LatLng(CurrentLocation.getLatitude(), CurrentLocation.getLongitude());
@@ -457,41 +432,31 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                                     MarkerOptions options = new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)).position(latLng);
                                     mMap2.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                                     mMap2.addMarker(options);
-                                    mMap2.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                                        @Override
-                                        public boolean onMarkerClick(@NonNull Marker marker) {
-                                            approvalRequestLayout.setVisibility(View.VISIBLE);
-                                            accept_approvaRequestLayout.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    customerrequestuid = dataSnapshot.getKey();
+                                    mMap2.setOnMarkerClickListener(marker -> {
+                                        approvalRequestLayout.setVisibility(View.VISIBLE);
+                                        accept_approvaRequestLayout.setOnClickListener(v -> {
+                                            customerrequestuid = dataSnapshot.getKey();
 
-                                                    AcceptRequest(customerrequestuid);
-                                                    getRouteToMarker(latLng);
-                                                    _approvalRequestLayout.setVisibility(View.VISIBLE);
+                                            AcceptRequest(customerrequestuid);
+                                            getRouteToMarker(latLng);
+                                            _approvalRequestLayout.setVisibility(View.VISIBLE);
+                                            approvalRequestLayout.setVisibility(GONE);
+                                            Arrivingworklayout1.setVisibility(View.VISIBLE);
+                                        });
+
+                                        cancel_approvaRequestLayout.setOnClickListener(v -> {
+                                            if (_state != null) {
+                                                if (_state.equals("free")) {
+                                                    fetchComplaint(mechtype);
                                                     approvalRequestLayout.setVisibility(GONE);
-                                                    Arrivingworklayout1.setVisibility(View.VISIBLE);
+
                                                 }
-                                            });
-
-                                            cancel_approvaRequestLayout.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-
-                                                public void onClick(View v) {
-                                                    if (_state != null) {
-                                                        if (_state.equals("free")) {
-                                                            fetchComplaint(mechtype);
-                                                            approvalRequestLayout.setVisibility(GONE);
-
-                                                        }
-                                                    } else {
-                                                        fetchComplaint(mechtype);
-                                                        approvalRequestLayout.setVisibility(GONE);
-                                                    }
-                                                }
-                                            });
-                                            return false;
-                                        }
+                                            } else {
+                                                fetchComplaint(mechtype);
+                                                approvalRequestLayout.setVisibility(GONE);
+                                            }
+                                        });
+                                        return false;
                                     });
                                     //}
                                 }
@@ -510,13 +475,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         HashMap<String, Object> updatedComplaint = new HashMap<>();
         updatedComplaint.put("state", "accept");
         updatedComplaint.put("mid", auth.getUid());
-        refer.updateChildren(updatedComplaint).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
+        refer.updateChildren(updatedComplaint).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
 //                  Toast.makeText(getContext(), "Request Accepted", Toast.LENGTH_SHORT).show();
-                    UpdateMechanicState();
-                }
+                UpdateMechanicState();
             }
         });
 
@@ -536,11 +498,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                 * Math.sin(dLon / 2);
         double c = 2 * Math.asin(Math.sqrt(a));
         double valueResult = Radius * c;
-        double km = valueResult / 1;
         DecimalFormat newFormat = new DecimalFormat("####");
-        int kmInDec = Integer.valueOf(newFormat.format(km));
+        int kmInDec = Integer.parseInt(newFormat.format(valueResult));
         double meter = valueResult % 1000;
-        int meterInDec = Integer.valueOf(newFormat.format(meter));
+        int meterInDec = Integer.parseInt(newFormat.format(meter));
         Log.i("Radius Value", "" + valueResult + "   KM  " + kmInDec
                 + " Meter   " + meterInDec);
 
@@ -551,14 +512,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("WorkerState").child(Objects.requireNonNull(auth.getUid()));
         HashMap<String, Object> updatedState = new HashMap<>();
         updatedState.put("state", "working");
-        reference.updateChildren(updatedState).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                if (task.isSuccessful()) {
-                    LocationServices.getFusedLocationProviderClient(requireActivity()).requestLocationUpdates()
-                    // Toast.makeText(getContext(), "State saved", Toast.LENGTH_SHORT).show();
-                }
-            }
+        reference.updateChildren(updatedState).addOnCompleteListener(task -> {
+            task.isSuccessful();// Toast.makeText(getContext(), "State saved", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -578,87 +533,50 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         LocationManager locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(
                 Context.LOCATION_SERVICE
         );
-        if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER)
-                || locationManager.isProviderEnabled(locationManager.NETWORK_PROVIDER)) {
+        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            fusedLocationProviderClient.removeLocationUpdates(mLocationCallback);
+            fusedLocationProviderClient.requestLocationUpdates(LocationRequest.create()
+                            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                            .setInterval(5000)
+                            .setFastestInterval(1000)
+                    , mLocationCallback, Looper.getMainLooper());
 
-            LocationRequest locationRequest = new LocationRequest()
-                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                    .setInterval(10000)
-                    .setSmallestDisplacement(1000)
-                    .setFastestInterval(10000);
-            LocationCallback locationCallback = new LocationCallback() {
-                @Override
-                public void onLocationResult(@NonNull LocationResult locationResult) {
+
+            fusedLocationProviderClient.getLastLocation().addOnCompleteListener(task -> {
+                Location location = task.getResult();
+                if (location != null) {
+                    CurrentLocation = location;
+                    lat = location.getLatitude();
+                    lng = location.getLongitude();
+
+                    mapFragment.getMapAsync(googleMap -> {
+                        LatLng latLng = new LatLng(lat, lng);
+                        MarkerOptions options = new MarkerOptions().position(latLng);
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                        mMap2 = googleMap;
+                        if (mGlobalMarker == null)
+                            mGlobalMarker = googleMap.addMarker(options);
+                    });
+
                     FirebaseDatabase.getInstance().getReference("Mechanic").child(Objects.requireNonNull(auth.getUid()))
-                            .get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                            .get().addOnCompleteListener(task3 -> {
+                                DataSnapshot snapshot = task3.getResult();
+                                if (snapshot.getValue() != null) {
+                                    services = Objects.requireNonNull(snapshot.child("service").getValue()).toString();
                                     HashMap<String, Object> userlocation = new HashMap<>();
-                                    userlocation.put("latitude", String.valueOf(locationResult.getLastLocation().getLatitude()));
-                                    userlocation.put("longitude", String.valueOf(locationResult.getLastLocation().getLongitude()));
+                                    userlocation.put("status", "offline");
+                                    userlocation.put("service", services);
+                                    userlocation.put("latitude", lat.toString());
+                                    userlocation.put("longitude", lng.toString());
 
-                                    if (mGlobalMarker != null) {
-                                        mGlobalMarker.setPosition(new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude()));
-                                    }
+                                    reference.child(auth.getUid()).updateChildren(userlocation).addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            Toast.makeText(getContext(), "Location Save", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
                                 }
                             });
-                }
-            };
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest
-                    , locationCallback, Looper.myLooper());
-
-            fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-                @Override
-                public void onComplete(@NonNull Task<Location> task) {
-                    Location location = task.getResult();
-                    if (location != null) {
-                        CurrentLocation = location;
-                        lat = location.getLatitude();
-                        lng = location.getLongitude();
-                        String.valueOf(location.getLatitude());
-                        String.valueOf(location.getLongitude());
-                        FirebaseDatabase.getInstance().getReference("Mechanic").child(Objects.requireNonNull(auth.getUid()))
-                                .addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        if (snapshot.getValue() != null) {
-                                            String state = Objects.requireNonNull(snapshot.child("service").getValue()).toString();
-                                            services = state;
-                                            HashMap<String, Object> userlocation = new HashMap<>();
-                                            userlocation.put("status", "offline");
-                                            userlocation.put("service", services);
-                                            userlocation.put("latitude", lat.toString());
-                                            userlocation.put("longitude", lng.toString());
-
-                                            reference.child(auth.getUid()).updateChildren(userlocation).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if (task.isSuccessful()) {
-                                                        Toast.makeText(getContext(), "Location Save", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                }
-                                            });
-                                        }
-
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-
-                                    }
-                                });
-
-                        mapFragment.getMapAsync(new OnMapReadyCallback() {
-                            @Override
-                            public void onMapReady(@NonNull GoogleMap googleMap) {
-                                LatLng latLng = new LatLng(lat, lng);
-                                MarkerOptions options = new MarkerOptions().position(latLng);
-                                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                                mMap2 = googleMap;
-                                mGlobalMarker = googleMap.addMarker(options);
-                            }
-                        });
-                    }
                 }
             });
         } else {
@@ -680,7 +598,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-
     }
 
     @Override
