@@ -37,6 +37,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.airbnb.lottie.L;
 import com.airbnb.lottie.LottieAnimationView;
 import com.directions.route.AbstractRouting;
 import com.directions.route.Route;
@@ -121,12 +122,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
 
     FusedLocationProviderClient fusedLocationProviderClient;
     Double lat, lng;
-    private HomeViewModel homeViewModel;
+    Marker mGlobalMarker;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                ViewModelProviders.of(this).get(HomeViewModel.class);
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         mapFragment = (SupportMapFragment) this.getChildFragmentManager()
                 .findFragmentById(R.id.map1);
@@ -312,7 +311,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                             Manifest.permission.ACCESS_COARSE_LOCATION
                     }, 100);
         }
-
 
         return view;
     }
@@ -557,6 +555,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
+                    LocationServices.getFusedLocationProviderClient(requireActivity()).requestLocationUpdates()
                     // Toast.makeText(getContext(), "State saved", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -581,6 +580,33 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
         );
         if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER)
                 || locationManager.isProviderEnabled(locationManager.NETWORK_PROVIDER)) {
+
+            LocationRequest locationRequest = new LocationRequest()
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                    .setInterval(10000)
+                    .setSmallestDisplacement(1000)
+                    .setFastestInterval(10000);
+            LocationCallback locationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(@NonNull LocationResult locationResult) {
+                    FirebaseDatabase.getInstance().getReference("Mechanic").child(Objects.requireNonNull(auth.getUid()))
+                            .get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<DataSnapshot> task) {
+                                    HashMap<String, Object> userlocation = new HashMap<>();
+                                    userlocation.put("latitude", String.valueOf(locationResult.getLastLocation().getLatitude()));
+                                    userlocation.put("longitude", String.valueOf(locationResult.getLastLocation().getLongitude()));
+
+                                    if (mGlobalMarker != null) {
+                                        mGlobalMarker.setPosition(new LatLng(locationResult.getLastLocation().getLatitude(), locationResult.getLastLocation().getLongitude()));
+                                    }
+                                }
+                            });
+                }
+            };
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest
+                    , locationCallback, Looper.myLooper());
+
             fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
                 @Override
                 public void onComplete(@NonNull Task<Location> task) {
@@ -629,25 +655,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, Locati
                                 MarkerOptions options = new MarkerOptions().position(latLng);
                                 googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
                                 mMap2 = googleMap;
-                                googleMap.addMarker(options);
+                                mGlobalMarker = googleMap.addMarker(options);
                             }
                         });
-                    } else {
-                        LocationRequest locationRequest = new LocationRequest()
-                                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                                .setInterval(10000)
-                                .setFastestInterval(10000)
-                                .setNumUpdates(1);
-                        LocationCallback locationCallback = new LocationCallback() {
-                            @Override
-                            public void onLocationResult(@NonNull LocationResult locationResult) {
-                                Location location1 = locationResult.getLastLocation();
-                                String.valueOf(location1.getLatitude());
-                                String.valueOf(location1.getLongitude());
-                            }
-                        };
-                        fusedLocationProviderClient.requestLocationUpdates(locationRequest
-                                , locationCallback, Looper.myLooper());
                     }
                 }
             });
