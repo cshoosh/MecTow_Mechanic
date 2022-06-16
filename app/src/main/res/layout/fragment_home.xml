@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeFragment"
+    android:orientation="vertical"
+    >
+        <fragment
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/map1"
+            android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="end"
+            android:textOff="Off"
+            android:textOn="On"
+            android:thumb="@drawable/thumb"
+            app:showText="true"
+            app:track="@drawable/track" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/upperBox"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="80dp"
+            android:visibility="gone"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            >
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/circular_image"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginLeft="50dp"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/logoo"
+                    android:elevation="3dp"
+                    />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/innerBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:background="@drawable/txtfields"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    >
+
+
+
+                        <TextView
+                            android:id="@+id/name_text1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            android:text="Tooba Shaikh"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/cadetBlue"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginRight="100dp"
+
+                            />
+                        <TextView
+                            android:id="@+id/Service_field"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintLeft_toRightOf="@id/name_text1"
+                            android:hint="Service"
+                            android:textSize="13sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/cadetBlue"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginLeft="20dp"
+
+
+                            />
+                        <TextView
+                            android:id="@+id/charges"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toTopOf="@+id/Service_field"
+                            app:layout_constraintEnd_toEndOf="@id/Service_field"
+
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginLeft="20dp"
+
+
+                            />
+
+
+                        <View
+                            android:id="@+id/horizontal_line"
+                            android:layout_width="330dp"
+                            android:layout_height="1dp"
+                            android:background="#E8E9EB"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            />
+
+                        <TextView
+                            android:id="@+id/Catagory_txt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@+id/horizontal_line"
+                            app:layout_constraintLeft_toLeftOf="parent"
+
+                            android:text="Catagory"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginTop="10dp"
+                            />
+
+                        <TextView
+                            android:id="@+id/user_usbcatagory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@+id/Catagory_txt"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            android:text="Mechanical Issues"
+                            android:layout_marginLeft="13sp"
+                            android:textStyle="bold"
+                            android:textSize="12sp"
+                            android:textColor="@color/cadetBlue"
+                            />
+
+
+                        <View
+                            android:id="@+id/verital_line"
+                            android:layout_width="1dp"
+                            android:layout_height="40dp"
+                            android:background="#E8E9EB"
+                            app:layout_constraintTop_toBottomOf="@id/horizontal_line"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            android:layout_marginTop="10dp"/>
+
+
+                        <TextView
+                            android:id="@+id/subCatagory_txt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@id/horizontal_line"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintLeft_toRightOf="@+id/Catagory_txt"
+                            android:text="Sub Catagory"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginTop="10dp"/>
+                        <TextView
+                            android:id="@+id/user_subcatagory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@id/subCatagory_txt"
+                            app:layout_constraintLeft_toRightOf="@+id/Catagory_txt"
+                            app:layout_constraintRight_toRightOf="parent"
+                            android:text="Car Heat"
+                            android:layout_marginLeft="25dp"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/cadetBlue"/>
+                        <View
+                            android:id="@+id/horizontal1_line"
+                            android:layout_width="330dp"
+                            android:layout_height="1dp"
+                            android:background="#E8E9EB"
+                            app:layout_constraintTop_toBottomOf="@+id/user_subcatagory"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            />
+
+                        <Button
+                            android:id="@+id/cancelbtn"
+                            android:layout_width="37dp"
+                            android:layout_height="37dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/cut"
+                            android:layout_marginBottom="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/acceptbtn"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintHorizontal_chainStyle="spread"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/horizontal1_line"
+                            />
+
+                        <View
+                            android:id="@+id/vertical_line"
+                            android:layout_width="1dp"
+                            android:layout_marginTop="0dp"
+                            android:background="#E8E9EB"
+                            android:layout_height="40dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/horizontal1_line" />
+
+                        <Button
+                            android:id="@+id/acceptbtn"
+                            android:layout_width="37dp"
+                            android:layout_height="37dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/checked"
+                            android:layout_marginBottom="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/cancelbtn"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/user_subcatagory"
+                            app:layout_constraintVertical_bias="1.0" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/_uperBox"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="70dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:visibility="gone"
+            >
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/_circular_image"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginLeft="50dp"
+                    android:layout_marginTop="30dp"
+                    android:src="@drawable/logoo"
+                    android:elevation="3dp"
+                    />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/_innerBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:background="@drawable/txtfields"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    >
+
+
+
+                        <TextView
+                            android:id="@+id/_name_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            android:text="Tooba Shaikh"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/cadetBlue"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginRight="150dp"
+
+                            />
+                        <TextView
+                            android:id="@+id/_Service_field"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintLeft_toRightOf="@id/_name_text"
+                            android:hint="Service"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginLeft="20dp"
+
+
+                            />
+                        <TextView
+                            android:id="@+id/_charges"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toTopOf="@+id/_Service_field"
+                            app:layout_constraintEnd_toEndOf="@id/_Service_field"
+                            android:hint="Charges"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:layout_marginTop="30dp"
+                            android:layout_marginLeft="20dp"
+
+
+                            />
+
+
+
+                        <View
+                            android:id="@+id/_horizontal_line"
+                            android:layout_width="330dp"
+                            android:layout_height="1dp"
+                            android:background="#E8E9EB"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            />
+
+                        <TextView
+                            android:id="@+id/_Catagory_txt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@+id/_horizontal_line"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            android:textColor="@android:color/black"
+                            android:text="Catagory"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginTop="10dp"
+                            />
+
+                        <TextView
+                            android:id="@+id/_user_usbcatagory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@+id/_Catagory_txt"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            android:text="Mechanical Issues"
+                            android:layout_marginLeft="22dp"
+                            android:textStyle="bold"
+                            android:textSize="18sp"
+                            android:textColor="@color/cadetBlue"
+                            />
+
+
+                        <View
+                            android:id="@+id/_verital_line"
+                            android:layout_width="1dp"
+                            android:layout_height="40dp"
+                            android:background="#E8E9EB"
+                            app:layout_constraintTop_toBottomOf="@id/_horizontal_line"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            android:layout_marginTop="10dp"/>
+
+
+                        <TextView
+                            android:id="@+id/_subCatagory_txt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@id/_horizontal_line"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintLeft_toRightOf="@+id/_Catagory_txt"
+                            android:text="Sub Catagory"
+                            android:textColor="@android:color/black"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginTop="10dp"/>
+                        <TextView
+                            android:id="@+id/_user_subcatagory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toBottomOf="@id/_subCatagory_txt"
+                            app:layout_constraintLeft_toRightOf="@+id/_Catagory_txt"
+                            app:layout_constraintRight_toRightOf="parent"
+                            android:text="Car Heat"
+                            android:layout_marginLeft="20dp"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/cadetBlue"/>
+                        <View
+                            android:id="@+id/_horizontal1_line"
+                            android:layout_width="330dp"
+                            android:layout_height="1dp"
+                            android:background="#E8E9EB"
+                            app:layout_constraintTop_toBottomOf="@+id/_user_subcatagory"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            />
+
+                        <com.airbnb.lottie.LottieAnimationView
+                            android:id="@+id/_call"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:scaleType="fitCenter"
+                            app:lottie_autoPlay="true"
+                            app:lottie_fileName="callingrequest.json"
+                            app:lottie_loop="true"
+                            android:clickable="true"
+                            android:layout_marginBottom="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/_message"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintHorizontal_chainStyle="spread"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/_horizontal1_line"
+                            />
+
+                        <View
+                            android:id="@+id/_vertical_line"
+                            android:layout_width="1dp"
+                            android:layout_marginTop="0dp"
+                            android:background="#E8E9EB"
+                            android:layout_height="40dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/_horizontal1_line" />
+
+                        <com.airbnb.lottie.LottieAnimationView
+                            android:id="@+id/_message"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:scaleType="fitCenter"
+                            app:lottie_autoPlay="true"
+                            app:lottie_fileName="chatting.json"
+                            app:lottie_loop="true"
+                            android:clickable="true"
+                            android:layout_marginBottom="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/_call"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/_user_subcatagory"
+                            app:layout_constraintVertical_bias="1.0" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <ImageView
+            android:id="@+id/locationbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="11dp"
+            android:src="@drawable/my_location"
+            android:text="Location" />
+        <RelativeLayout
+            android:id="@+id/Arrivingworklayout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="60dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:background="@drawable/buttonlayout"
+            >
+                <TextView
+
+                    android:id="@+id/arriving"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Arriving"
+                    android:textColor="#FFFFFF"
+                    android:textSize="25dp"
+                    />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/Arrivedworklayout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="60dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:background="@drawable/buttonlayout"
+
+            >
+
+                <TextView
+
+                    android:id="@+id/arrived"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Arrived"
+                    android:textColor="#FFFFFF"
+                    android:textSize="25dp"
+                    />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/startworklayout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="60dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:background="@drawable/buttonlayout"
+
+            >
+
+                <TextView
+
+                    android:id="@+id/startwork"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Start Working"
+                    android:textColor="#FFFFFF"
+                    android:textSize="25dp"
+                     />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/endworklayout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="60dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:background="@drawable/buttonlayout"
+
+            >
+
+                <TextView
+
+                    android:id="@+id/endwork"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="end Working"
+                    android:textColor="#FFFFFF"
+                    android:textSize="25dp"
+                    />
+        </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".login_mechanic"
+    android:background="@drawable/bg6"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/login_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/mech_logintxt"
+                android:layout_width="wrap_content"
+                android:layout_height="113dp"
+                android:layout_marginTop="10dp"
+                android:gravity="left"
+                android:rotation="90"
+                android:text="\nLogin"
+                android:textColor="#1e3d59"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/mech_logintxt2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/mech_logintxt"
+                android:layout_margin="5dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="It's ready to get back\n on Track"
+                android:textColor="#1e3d59"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/logo_login"
+                android:layout_width="200dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:scaleType="fitXY"
+                android:src="@drawable/logoo" />
+            <RelativeLayout
+                android:id="@+id/mech_email_layout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/style_layout"
+                android:elevation="10dp">
+                <ImageView
+                    android:id="@+id/email_icon"
+                    android:layout_width="30dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/email" />
+                <EditText
+                    android:id="@+id/mech_email_login"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="20dp"
+                    android:autofillHints="someone@gmail.com"
+                    android:hint="Enter your Email"
+                    android:inputType="textEmailAddress"
+                    android:padding="10dp"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@android:color/black"
+                    android:textSize="22sp" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/mech_password_layout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_below="@+id/mech_email_layout"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/style_layout"
+                android:elevation="10dp"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@android:color/black">
+                <ImageView
+                    android:id="@+id/pass_icon"
+                    android:layout_width="30dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/pass" />
+
+                <EditText
+                    android:id="@+id/mech_pass_login"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="20dp"
+                    android:autofillHints="Password"
+                    android:hint="Enter your Password"
+                    android:inputType="textPassword"
+                    android:padding="10dp"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="@android:color/black"
+                    android:textSize="22sp" />
+                <ImageView
+                    android:id="@+id/show_pass_btn"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="20dp"
+                    android:alpha=".5"
+                    android:clickable="true"
+                    android:onClick="ShowHidePass"
+                    android:src="@drawable/invisible" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/mech_forgotlayout"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_below="@+id/mech_password_layout"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:gravity="end">
+                <Button
+                    android:id="@+id/mech_forgot_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="220dp"
+                    android:background="@null"
+                    android:padding="3dp"
+                    android:text="Forgot Password?"
+                    android:textAllCaps="false"
+                    android:textColorHint="@android:color/black"
+                    android:textSize="17sp" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/signinbtnlayout"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_below="@+id/mech_forgot_passwordt"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:gravity="end">
+                <Button
+                    android:id="@+id/mech_login"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:background="@drawable/button_design"
+                    android:contextClickable="true"
+                    android:text="Sign in"
+                    android:textAllCaps="true"
+                    android:textColor="@android:color/white" />
+            </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/mech_loginlayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/mech_signinbtnlayout"
+                android:layout_marginTop="20dp"
+                android:gravity="center">
+                <TextView
+                    android:id="@+id/mech_donttxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_marginTop="15dp"
+                    android:text="Don't have an account?"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp"
+                    android:textStyle="italic"/>
+
+                <Button
+                    android:id="@+id/mech_signuphere"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:layout_marginTop="13dp"
+                    android:background="@null"
+                    android:text="Sign Up Here!"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
